@@ -1,6 +1,6 @@
 import React, { FC, memo } from 'react';
 
-import * as util from '../../../common/misc';
+import { formatMethodName } from '../../../common/misc';
 
 interface Props {
   method: string;
@@ -13,8 +13,8 @@ export const MethodTag: FC<Props> = memo(({ method, override, fullNames }) => {
   let overrideName = override;
 
   if (!fullNames) {
-    methodName = util.formatMethodName(method);
-    overrideName = override ? util.formatMethodName(override) : override;
+    methodName = formatMethodName(method);
+    overrideName = override ? formatMethodName(override) : override;
   }
 
   return (
@@ -24,12 +24,12 @@ export const MethodTag: FC<Props> = memo(({ method, override, fullNames }) => {
       }}
     >
       {overrideName && (
-        <div className={'tag tag--no-bg tag--superscript http-method-' + method}>
+        <div className={`tag tag--no-bg tag--superscript http-method-${method} method-${method}`}>
           <span>{methodName}</span>
         </div>
       )}
       <div
-        className={'tag tag--no-bg tag--small http-method-' + (overrideName ? override : method)}
+        className={`tag tag--no-bg tag--small http-method-${(overrideName ? override : method)} method-${(overrideName ? override : method)}`}
       >
         <span className="tag__inner">{overrideName || methodName}</span>
       </div>

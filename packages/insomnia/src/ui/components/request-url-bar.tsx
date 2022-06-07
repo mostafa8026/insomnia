@@ -17,6 +17,7 @@ import { OneLineEditor } from './codemirror/one-line-editor';
 import { MethodDropdown } from './dropdowns/method-dropdown';
 import { KeydownBinder } from './keydown-binder';
 import { showPrompt } from './modals/index';
+import { WebSocketSendButton } from './panes/websocket-send-button';
 
 interface Props {
   handleAutocompleteUrls: () => Promise<string[]>;
@@ -266,9 +267,13 @@ export class RequestUrlBar extends PureComponent<Props, State> {
   }
 
   renderSendButton() {
-    const { hotKeyRegistry, downloadPath } = this.props;
+    const { hotKeyRegistry, downloadPath, request } = this.props;
     const { currentInterval, currentTimeout } = this.state;
     let cancelButton: ReactNode = null;
+
+    if (request.requestType === 'WebSocket') {
+      return <WebSocketSendButton />;
+    }
 
     if (currentInterval) {
       cancelButton = (
@@ -356,7 +361,7 @@ export class RequestUrlBar extends PureComponent<Props, State> {
       handleAutocompleteUrls,
       uniquenessKey,
     } = this.props;
-    const { url, method } = request;
+    const { url, method, placeholder } = request;
 
     return (
       <KeydownBinder onKeydown={this._handleKeyDown}>
@@ -376,7 +381,7 @@ export class RequestUrlBar extends PureComponent<Props, State> {
               forceEditor
               type="text"
               getAutocompleteConstants={handleAutocompleteUrls}
-              placeholder="https://api.myproduct.com/v1/users"
+              placeholder={placeholder}
               defaultValue={url}
               onChange={this._handleUrlChange}
             />

@@ -14,7 +14,7 @@ import { DropdownItem } from './dropdown-item';
 const dropdownsContainer = document.querySelector('#dropdowns-container');
 
 export interface DropdownProps {
-  children: ReactNode;
+  children?: ReactNode;
   right?: boolean;
   outline?: boolean;
   wide?: boolean;

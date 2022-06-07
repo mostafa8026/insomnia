@@ -4,7 +4,7 @@ import { head, tail } from 'ramda';
 import { v4 as uuidv4 } from 'uuid';
 import zlib from 'zlib';
 
-import { DEBOUNCE_MILLIS, METHOD_DELETE, METHOD_OPTIONS } from './constants';
+import { DEBOUNCE_MILLIS, METHOD_DELETE, METHOD_OPTIONS, REQUEST_METHODS, RequestMethod } from './constants';
 
 const ESCAPE_REGEX_MATCH = /[-[\]/{}()*+?.\\^$|]/g;
 
@@ -120,17 +120,22 @@ export function removeVowels(str: string) {
   return str.replace(/[aeiouyAEIOUY]/g, '');
 }
 
-export function formatMethodName(method: string) {
-  let methodName = method || '';
-
-  if (method === METHOD_DELETE || method === METHOD_OPTIONS) {
-    methodName = method.slice(0, 3);
-  } else if (method.length > 4) {
-    methodName = removeVowels(method).slice(0, 4);
+export const formatMethodName = (method?: RequestMethod | string) => {
+  if (!method) {
+    return '';
   }
 
-  return methodName;
-}
+  const matchedMethod = REQUEST_METHODS.find(info => info.method === method);
+  if (matchedMethod) {
+    return matchedMethod.tag;
+  }
+
+  if (method.length > 4) {
+    return removeVowels(method).slice(0, 4);
+  }
+
+  return method;
+};
 
 export function keyedDebounce<T>(
   callback: (t: Record<string, T[]>) => void,

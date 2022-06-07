@@ -222,18 +222,38 @@ export const METHOD_PATCH = 'PATCH';
 export const METHOD_DELETE = 'DELETE';
 export const METHOD_OPTIONS = 'OPTIONS';
 export const METHOD_HEAD = 'HEAD';
-export const HTTP_METHODS = [
-  METHOD_GET,
-  METHOD_POST,
-  METHOD_PUT,
-  METHOD_PATCH,
-  METHOD_DELETE,
-  METHOD_OPTIONS,
-  METHOD_HEAD,
-];
+
+interface MethodInfo {
+  /** unique code */
+  readonly method: string;
+
+  /** name shown to users */
+  readonly label: string;
+
+  /** shortened name that shows up in the sidebar */
+  readonly tag: string;
+
+  readonly type: 'sync' | 'async';
+}
+
+export const isSyncMethod = (methodInfo: MethodInfo) => methodInfo.type === 'sync';
+
+export const REQUEST_METHODS = [
+  { method: 'GET', label: 'GET', tag: 'GET', type: 'sync' },
+  { method: 'POST', label: 'POST', tag: 'POST', type: 'sync' },
+  { method: 'PUT', label: 'PUT', tag: 'PUT', type: 'sync' },
+  { method: 'PATCH', label: 'PATCH', tag: 'PATCH', type: 'sync' },
+  { method: 'DELETE', label: 'DELETE', tag: 'DEL', type: 'sync' },
+  { method: 'OPTIONS', label: 'OPTIONS', tag: 'OPT', type: 'sync' },
+  { method: 'HEAD', label: 'HEAD', tag: 'HEAD', type: 'sync' },
+  { method: 'WebSocket', label: 'WebSocket', tag: 'WS', type: 'async' },
+] as const;
 
 // Additional methods
 export const METHOD_GRPC = 'GRPC';
+export const GRPC_LABEL = 'gRPC';
+
+export type RequestMethod = (typeof REQUEST_METHODS[number])['method'];
 
 // Preview Modes
 export const PREVIEW_MODE_FRIENDLY = 'friendly';

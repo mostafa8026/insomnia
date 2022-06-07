@@ -1,21 +1,19 @@
 import { autoBindMethodsForReact } from 'class-autobind-decorator';
+import { partition } from 'ramda';
 import React, { PureComponent } from 'react';
 
-import * as constants from '../../../common/constants';
-import { AUTOBIND_CFG, METHOD_GRPC } from '../../../common/constants';
+import { AUTOBIND_CFG, isSyncMethod, REQUEST_METHODS, RequestMethod } from '../../../common/constants';
 import { Dropdown } from '../base/dropdown/dropdown';
 import { DropdownButton } from '../base/dropdown/dropdown-button';
 import { DropdownDivider } from '../base/dropdown/dropdown-divider';
 import { DropdownItem } from '../base/dropdown/dropdown-item';
 import { showPrompt } from '../modals/index';
 const LOCALSTORAGE_KEY = 'insomnia.httpMethods';
-const GRPC_LABEL = 'gRPC';
 
 interface Props {
   onChange: Function;
-  method: string;
+  method: RequestMethod;
   right?: boolean;
-  showGrpc?: boolean;
   className?: string;
 }
 
@@ -60,7 +58,7 @@ export class MethodDropdown extends PureComponent<Props> {
         }
 
         // Don't add base methods
-        if (constants.HTTP_METHODS.includes(method)) {
+        if (REQUEST_METHODS.map(({ method }) => method).includes(method as RequestMethod)) {
           return;
         }
 
@@ -87,18 +85,17 @@ export class MethodDropdown extends PureComponent<Props> {
       method,
       right,
       onChange,
-      // eslint-disable-line @typescript-eslint/no-unused-vars
-      showGrpc,
       ...extraProps
     } = this.props;
-    const buttonLabel = method === METHOD_GRPC ? GRPC_LABEL : method;
+    const [syncMethods, asyncMethods] = partition(isSyncMethod, REQUEST_METHODS);
+
     return (
       <Dropdown ref={this._setDropdownRef} className="method-dropdown" right={right}>
         <DropdownButton {...extraProps}>
-          <span className={`http-method-${method}`}>{buttonLabel}</span>{' '}
+          <span className={`http-method-${method} method-${method}`}>{method}</span>{' '}
           <i className="fa fa-caret-down space-left" />
         </DropdownButton>
-        {constants.HTTP_METHODS.map(method => (
+        {syncMethods.map(({ method }) => (
           <DropdownItem
             key={method}
             className={`http-method-${method}`}
@@ -108,14 +105,19 @@ export class MethodDropdown extends PureComponent<Props> {
             {method}
           </DropdownItem>
         ))}
-        {showGrpc && (
-          <>
-            <DropdownDivider />
-            <DropdownItem className="method-grpc" onClick={this._handleChange} value={METHOD_GRPC}>
-              {GRPC_LABEL}
-            </DropdownItem>
-          </>
-        )}
+
+        <DropdownDivider>Async</DropdownDivider>
+        {asyncMethods.map(({ method }) => (
+          <DropdownItem
+            key={method}
+            className={`method-${method}`}
+            onClick={this._handleChange}
+            value={method}
+          >
+            {method}
+          </DropdownItem>
+        ))}
+
         <DropdownDivider />
         <DropdownItem
           className="http-method-custom"

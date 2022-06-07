@@ -73,17 +73,52 @@ export interface RequestBody {
   params?: RequestBodyParameter[];
 }
 
-export interface BaseRequest {
+export type MessageType =
+| 'Base64'
+| 'File'
+| 'HTML'
+| 'Hex'
+| 'JSON'
+| 'Text'
+| 'None'
+| 'Protobuf'
+| 'XML'
+;
+
+export type WebSocketDirection = 'sent' | 'received';
+
+export interface WebSocketMessage {
+  type: MessageType;
+  text: string;
+  direction: WebSocketDirection;
+  time: number;
+}
+
+export type WebSocketConnectionStatus = 'connected' | 'connecting' | 'disconnected' | 'fresh';
+
+export interface WebSocketConnection {
+  status: WebSocketConnectionStatus;
+}
+
+export interface WebSocketStuffLol {
+  messageType: MessageType;
+  messages: WebSocketMessage[];
+  connection: WebSocketConnection;
+}
+
+export interface HTTPRequest {
   url: string;
   name: string;
   description: string;
-  method: string;
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'HEAD';
   body: RequestBody;
   parameters: RequestParameter[];
   headers: RequestHeader[];
   authentication: RequestAuthentication;
   metaSortKey: number;
   isPrivate: boolean;
+  placeholder: string;
+
   // Settings
   settingStoreCookies: boolean;
   settingSendCookies: boolean;
@@ -91,7 +126,31 @@ export interface BaseRequest {
   settingEncodeUrl: boolean;
   settingRebuildPath: boolean;
   settingFollowRedirects: string;
+  requestType: 'HTTP';
 }
+
+export interface WebSocketRequest {
+  body: string;
+  description: RequestBody;
+  headers: RequestHeader[];
+  metaSortKey: number;
+  method: 'WebSocket';
+  parameters: RequestParameter[];
+  requestType: 'WebSocket';
+  url: string;
+  webSocketStuffLol: WebSocketStuffLol;
+  placeholder: string;
+}
+
+export type BaseRequest = HTTPRequest | WebSocketRequest;
+
+export const isHTTPRequest = (model: BaseRequest): model is HTTPRequest => {
+  return !isWebSocketRequest(model);
+};
+
+export const isWebSocketRequest = (model: BaseRequest): model is WebSocketRequest => {
+  return 'webSocketStuffLol' in model;
+};
 
 export type Request = BaseModel & BaseRequest;
 
@@ -118,6 +177,12 @@ export function init(): BaseRequest {
     settingEncodeUrl: true,
     settingRebuildPath: true,
     settingFollowRedirects: 'global',
+    placeholder: 'https://api.myproduct.com/v1/users',
+
+    requestType: 'HTTP',
+
+    // @ts-expect-error we have to fight with the prun magic in initModel
+    webSocketStuffLol: {},
   };
 }
 

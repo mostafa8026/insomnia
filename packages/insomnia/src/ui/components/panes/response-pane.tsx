@@ -13,7 +13,7 @@ import { exportHarCurrentRequest } from '../../../common/har';
 import { getSetCookieHeaders } from '../../../common/misc';
 import * as models from '../../../models';
 import type { Environment } from '../../../models/environment';
-import type { Request } from '../../../models/request';
+import { isRequest, isWebSocketRequest, Request } from '../../../models/request';
 import type { RequestVersion } from '../../../models/request-version';
 import type { Response } from '../../../models/response';
 import type { UnitTestResult } from '../../../models/unit-test-result';
@@ -243,6 +243,35 @@ export class ResponsePane extends PureComponent<Props> {
       response,
       responses,
     } = this.props;
+
+    if (request && isRequest(request) && isWebSocketRequest(request)) {
+      console.log({ messages: request.webSocketStuffLol.messages });
+      return (
+        <div>
+          <table className="table--fancy table--outlined">
+            <tbody>
+              <thead>
+                <tr>
+                  <th>Dir</th>
+                  <th>Time</th>
+                  <th>Text</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+
+              {request.webSocketStuffLol.messages?.map(message => (
+                <tr key={message.time}>
+                  <td>{message.direction}</td>
+                  <td>{message.time}</td>
+                  <td>{message.text}</td>
+                  <td>{message.type}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
 
     if (!request) {
       return <BlankPane type="response" />;

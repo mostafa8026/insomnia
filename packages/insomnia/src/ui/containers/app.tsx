@@ -424,12 +424,41 @@ class App extends PureComponent<AppProps, State> {
           name: 'Content-Type',
           value: CONTENT_TYPE_JSON,
         }],
-        body:{
+        body: {
           mimeType: CONTENT_TYPE_GRAPHQL,
           text: '',
         },
         name: 'New Request',
       });
+      models.stats.incrementCreatedRequests();
+      trackSegmentEvent(SegmentEvent.requestCreate, { requestType });
+      this._handleSetActiveRequest(request._id);
+      return;
+    }
+    if (requestType === 'WebSocket') {
+      const request = await models.request.create({
+        parentId,
+        method: 'WebSocket',
+        requestType: 'WebSocket',
+        // url: 'ws://ws.ifelse.io', // TEMPORARY!!!!!!!!
+        webSocketStuffLol: {
+          messageType: 'JSON',
+          messages: [],
+          connection: {
+            status: 'fresh',
+          },
+        },
+        placeholder: 'wss://ws.ifelse.io',
+        headers: [
+          { name: 'Connection', value: 'Upgrade' },
+          { name: 'Upgrade', value: 'websocket' },
+          { name: 'Sec-WebSocket-Key', value: '<TODO>' },
+          { name: 'Sec-WebSocket-Version', value: '13' },
+          { name: 'Sec-WebSocket-Extensions', value: '<TODO>' },
+        ],
+        name: 'New WebSocket',
+      });
+
       models.stats.incrementCreatedRequests();
       trackSegmentEvent(SegmentEvent.requestCreate, { requestType });
       this._handleSetActiveRequest(request._id);

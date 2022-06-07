@@ -28,7 +28,7 @@ interface Props extends DropdownProps {
   onChange: (mimeType: string | null) => void;
   contentType?: string | null;
   className?: string;
-  request?: Request;
+  request: Request;
 }
 const EMPTY_MIME_TYPE = null;
 
@@ -88,10 +88,29 @@ export class ContentTypeDropdown extends PureComponent<Props> {
   }
 
   render() {
-    const { children, className, ...extraProps } = this.props;
+    const {
+      className,
+      request: {
+        body,
+      },
+      ...extraProps
+    } = this.props;
+
+    let numBodyParams = 0;
+
+    if (body && body.params) {
+      numBodyParams = body.params.filter(param => !param.disabled).length;
+    }
+
     return (
       <Dropdown beside {...extraProps}>
-        <DropdownButton className={className}>{children}</DropdownButton>
+        <DropdownButton className={className}>
+          {typeof body.mimeType === 'string'
+            ? getContentTypeName(body.mimeType)
+            : 'Body'}
+          {numBodyParams ? <span className="bubble space-left">{numBodyParams}</span> : null}
+          <i className="fa fa-caret-down space-left" />
+        </DropdownButton>
         <DropdownDivider>
           <span>
             <i className="fa fa-bars" /> Structured

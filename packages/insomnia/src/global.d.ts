@@ -21,6 +21,7 @@ declare namespace NodeJS {
 }
 
 interface Window {
+  ws: WebSocket; // TODO: HACK
   __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: Function;
   main: {
     restart: () => void;

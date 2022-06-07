@@ -1,8 +1,10 @@
+import { is } from 'date-fns/locale';
+
 import { GrpcRequest, isGrpcRequest } from '../models/grpc-request';
 import { isRequest, Request } from '../models/request';
 import { isRequestGroup, RequestGroup } from '../models/request-group';
 import {
-  HTTP_METHODS,
+  REQUEST_METHODS,
   SORT_CREATED_ASC,
   SORT_CREATED_DESC,
   SORT_HTTP_METHOD,
@@ -70,19 +72,16 @@ export const httpMethodSort: SortFunction<Pick<SortableModel, 'type' | 'metaSort
   }
 
   // Sort Requests by HTTP method
-  if (isRequest(a)) {
-    const aIndex = HTTP_METHODS.indexOf(a.method);
-    // @ts-expect-error -- TSCONVERSION
-    const bIndex = HTTP_METHODS.indexOf(b.method);
+  if (isRequest(a) && isRequest(b)) {
+    const aIndex = REQUEST_METHODS.map(({ method }) => method).indexOf(a.method);
+    const bIndex = REQUEST_METHODS.map(({ method }) => method).indexOf(b.method);
 
     if (aIndex !== bIndex) {
       return aIndex < bIndex ? -1 : 1;
     }
 
     // Sort by ascending method name if comparing two custom methods
-    // @ts-expect-error -- TSCONVERSION
     if (aIndex === -1 && a.method.localeCompare(b.method) !== 0) {
-      // @ts-expect-error -- TSCONVERSION
       return a.method.localeCompare(b.method);
     }
   }

@@ -113,6 +113,7 @@ export function getOperationPlugins(
   const operationPlugins: OperationPlugin[] = Object.keys(pathItem)
     .filter(isHttpMethodKey)
     .map(key => {
+      api=api;
       // We know this will always, only be OA3Operation (because of the filter above)
       const operation = pathItem[key as `${Lowercase<HttpMethodType>}`] as OA3Operation;
       const pluginNameSuffix = PluginNameSuffix.operation;

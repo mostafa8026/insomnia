@@ -79,7 +79,7 @@ export function generateSecurityPlugin(
   let plugin: DCPlugin | null = null;
 
   // Generate base plugin
-  switch (scheme?.type.toLowerCase()) {
+  switch (scheme?.type?.toLowerCase()) {
     case 'apikey':
       plugin = generateApiKeySecurityPlugin(scheme as OpenAPIV3.ApiKeySecurityScheme);
       break;

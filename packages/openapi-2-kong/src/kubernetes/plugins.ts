@@ -7,9 +7,8 @@ import {
   getServers,
   HttpMethodType,
   isHttpMethodKey,
-  isPluginKey,
+  isPluginKey
 } from '../common';
-import { generateSecurityPlugins } from '../declarative-config/security-plugins';
 import { DCPlugin } from '../types/declarative-config';
 import { IndexIncrement, OperationPlugin, PathPlugin, Plugins, ServerPlugin } from '../types/k8s-plugins';
 import { PluginBase } from '../types/kong';
@@ -81,12 +80,7 @@ export function mapDcPluginsToK8sPlugins(
 export function getGlobalPlugins(api: OpenApi3Spec, increment: IndexIncrement) {
   const pluginNameSuffix = PluginNameSuffix.global;
   const globalK8sPlugins = generateK8sPluginConfig(api, pluginNameSuffix, increment);
-  const securityPlugins = mapDcPluginsToK8sPlugins(
-    generateSecurityPlugins(null, api, []),
-    pluginNameSuffix,
-    increment,
-  );
-  return [...globalK8sPlugins, ...securityPlugins];
+  return [...globalK8sPlugins];
 }
 
 export function getServerPlugins(
@@ -123,14 +117,9 @@ export function getOperationPlugins(
       const operation = pathItem[key as `${Lowercase<HttpMethodType>}`] as OA3Operation;
       const pluginNameSuffix = PluginNameSuffix.operation;
       const opPlugins = generateK8sPluginConfig(operation, pluginNameSuffix, increment);
-      const securityPlugins = mapDcPluginsToK8sPlugins(
-        generateSecurityPlugins(operation, api, []),
-        pluginNameSuffix,
-        increment,
-      );
       return {
         method: key,
-        plugins: [...opPlugins, ...securityPlugins],
+        plugins: [...opPlugins],
       };
     });
   return normalizeOperationPlugins(operationPlugins);

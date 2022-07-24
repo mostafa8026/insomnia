@@ -5,7 +5,7 @@ import {
   getName,
   hasUpstreams,
   parseUrl,
-  pathVariablesToRegex,
+  pathVariablesToRegex
 } from '../common';
 import { DCRoute, DCService } from '../types/declarative-config';
 import { xKongName, xKongServiceDefaults } from '../types/kong';
@@ -14,9 +14,8 @@ import {
   generateGlobalPlugins,
   generateOperationPlugins,
   generatePlugins,
-  getRequestValidatorPluginDirective,
+  getRequestValidatorPluginDirective
 } from './plugins';
-import { generateSecurityPlugins } from './security-plugins';
 import { appendUpstreamToName } from './upstreams';
 
 export async function generateServices(api: OpenApi3Spec, tags: string[]) {
@@ -122,7 +121,7 @@ export async function generateService(server: OA3Server, api: OpenApi3Spec, tags
       }
 
       // Generate generic and security-related plugin objects
-      const securityPlugins = generateSecurityPlugins(operation, api, tags);
+      // const securityPlugins = generateSecurityPlugins(operation, api, tags);
 
       // Path plugin takes precedence over global
       const parentValidatorPlugin = pathValidatorPlugin || globalPlugins.requestValidatorPlugin;
@@ -135,7 +134,7 @@ export async function generateService(server: OA3Server, api: OpenApi3Spec, tags
         api,
       });
 
-      const plugins = [...regularPlugins, ...securityPlugins];
+      const plugins = [...regularPlugins];
       // Add plugins if there are any
       if (plugins.length) {
         route.plugins = plugins;

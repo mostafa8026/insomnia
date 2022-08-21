@@ -162,13 +162,13 @@ export function generateRouteName(
     return `${name}-${opsName}`;
   }
 
-  if (pathItem?.[method]?.operationId) {
-    const opsName = generateSlug(pathItem?.[method]?.operationId as string);
-    return `${name}-${opsName}`;
-  }
+  // if (pathItem?.[method]?.operationId) {
+  //   const opsName = generateSlug(pathItem?.[method]?.operationId as string);
+  //   return `${name}-${opsName}`;
+  // }
 
   // replace all `/` with `-` except the ones at the beginning or end of a string
   const replacedRoute = routePath.replace(/(?!^)\/(?!$)/g, '-');
   const pathSlug = generateSlug(pathItem[xKongName] || replacedRoute);
-  return `${name}${pathSlug ? `-${pathSlug}` : ''}-${method}`;
+  return `${name}-${method}${pathSlug ? `-${pathSlug}` : ''}`;
 }
